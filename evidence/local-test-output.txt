@@ -1,0 +1,25 @@
+
+ REST API Server Tests 
+- It should Create a counter
+- It should not Create a duplicate counter
+- It should Delete a counter
+- It should be healthy
+- It should call the index call
+- It should List counters
+- It should Read a counter
+- It should Update a counter
+- It should not Update a missing counter
+
+Name                             Stmts   Miss  Cover   Missing
+--------------------------------------------------------------
+service\__init__.py                  8      0   100%
+service\common\log_handlers.py      11      1    91%   37
+service\common\status.py            45      0   100%
+service\routes.py                   48      0   100%
+--------------------------------------------------------------
+TOTAL                              112      1    99%
+----------------------------------------------------------------------
+Ran 9 tests in 0.208s
+
+OK
+

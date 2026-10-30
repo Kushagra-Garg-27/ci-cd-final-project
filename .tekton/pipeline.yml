@@ -1,0 +1,64 @@
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: oc-pipelines-oc-final
+spec:
+  description: CI/CD Final Pipeline for Python Counter Service
+  params:
+    - name: git-url
+      type: string
+      description: The Git repository URL
+      default: https://github.com/Kushagra-Garg-27/ci-cd-final-project.git
+    - name: git-revision
+      type: string
+      description: The Git revision to check out
+      default: main
+  workspaces:
+    - name: pipeline-workspace
+  tasks:
+    - name: cleanup
+      taskRef:
+        name: cleanup
+      workspaces:
+        - name: source
+          workspace: pipeline-workspace
+
+    - name: clone
+      taskRef:
+        name: git-clone
+      runAfter:
+        - cleanup
+      params:
+        - name: url
+          value: $(params.git-url)
+        - name: revision
+          value: $(params.git-revision)
+      workspaces:
+        - name: output
+          workspace: pipeline-workspace
+
+    - name: lint
+      taskRef:
+        name: flake8
+      runAfter:
+        - clone
+      params:
+        - name: image
+          value: python:3.9-slim
+        - name: args
+          value: ["--count", "--max-complexity=10", "--max-line-length=127", "--statistics"]
+      workspaces:
+        - name: source
+          workspace: pipeline-workspace
+
+    - name: tests
+      taskRef:
+        name: nose
+      runAfter:
+        - lint
+      params:
+        - name: args
+          value: "-v"
+      workspaces:
+        - name: source
+          workspace: pipeline-workspace

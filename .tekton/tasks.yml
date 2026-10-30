@@ -1,0 +1,47 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: cleanup
+spec:
+  description: This task will clean up previous build and temporary test artifacts from the workspace directory
+  workspaces:
+    - name: source
+  steps:
+    - name: clean
+      image: alpine:3.19
+      workingDir: $(workspaces.source.path)
+      securityContext:
+        runAsNonRoot: false
+      script: |
+        #!/bin/sh
+        set -e
+        echo "Cleaning up temporary pipeline and build artifacts from workspace..."
+        rm -rf .coverage .coverage.* coverage.xml unittests.xml .pytest_cache *.pyc __pycache__
+        rm -rf ./* ./.[!.]* 2>/dev/null || true
+        echo "Cleanup complete."
+---
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: nose
+spec:
+  description: This task will run unit tests using nose
+  workspaces:
+    - name: source
+  params:
+    - name: args
+      description: Arguments to pass to nosetests
+      type: string
+      default: "-v"
+  steps:
+    - name: nosetests
+      image: python:3.9-slim
+      workingDir: $(workspaces.source.path)
+      script: |
+        #!/usr/bin/env bash
+        set -e
+        python -m pip install --upgrade pip wheel
+        if [ -f "requirements.txt" ]; then
+          pip install -r requirements.txt
+        fi
+        nosetests $(params.args)
