@@ -1,0 +1,39 @@
+================================================================================
+OPENSHIFT APPLICATION LOG STATUS & CAPTURE INSTRUCTIONS
+================================================================================
+Target Repository: https://github.com/Kushagra-Garg-27/ci-cd-final-project
+Target Application: hit-counter-service / counter-service
+Target Pipeline: oc-pipelines-oc-final
+
+STATUS: BLOCKED / PENDING OPENSHIFT LAB EXECUTION
+An OpenShift cluster is not reachable from this local development environment.
+The OpenShift CLI ('oc') is not authenticated to an external cluster on this machine.
+Per assignment instructions, synthetic or fabricated logs are strictly prohibited.
+
+================================================================================
+INSTRUCTIONS TO CAPTURE REAL APPLICATION LOGS IN YOUR OPENSHIFT LAB ENVIRONMENT
+================================================================================
+
+1. In your Coursera / IBM Skills Network Cloud IDE terminal, log into your OpenShift cluster:
+   $ oc login --token=<YOUR-ROBOT-OR-USER-TOKEN> --server=<YOUR-OPENSHIFT-SERVER-URL>
+
+2. Ensure you are in your assigned project/namespace:
+   $ oc project <your-namespace>
+
+3. Once your application deployment is rolled out by the pipeline (or via deployment manifest):
+   $ oc get pods -l app=counter-service
+
+4. Stream and export the real pod logs directly to this file:
+   $ oc logs deployment/counter-service > evidence/openshift-application-logs.txt
+
+   Or by pod name:
+   $ oc logs <pod-name> > evidence/openshift-application-logs.txt
+
+5. Expected Genuine Log Output Pattern:
+   [2026-10-30 01:55:00 +0000] [1] [INFO] Starting gunicorn 20.1.0
+   [2026-10-30 01:55:00 +0000] [1] [INFO] Listening at: http://0.0.0.0:8000 (1)
+   [2026-10-30 01:55:00 +0000] [1] [INFO] Using worker: sync
+   [2026-10-30 01:55:00 +0000] [7] [INFO] Booting worker with pid: 7
+   [2026-10-30 01:55:02 +0000] [7] [INFO] [routes.py:15] Health Status checked: OK (HTTP 200)
+   10.128.2.1 - - [30/Oct/2026:01:55:02 +0000] "GET /health HTTP/1.1" 200 15 "-" "kube-probe/1.24"
+================================================================================
